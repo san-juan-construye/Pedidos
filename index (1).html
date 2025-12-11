@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>San Juan Construye - Todo en Herramientas y Materiales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'orange-primary': '#FF6B35',
+                        'gray-dark': '#2C3E50',
+                        'green-accent': '#27AE60',
+                        'cream': '#FAFAFA'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                        'source': ['Source Sans Pro', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+            min-height: 100vh;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="tools" patternUnits="userSpaceOnUse" width="20" height="20"><path d="M2,2 L8,8 M12,2 L18,8 M2,12 L8,18 M12,12 L18,18" stroke="%23FF6B35" stroke-width="0.5" opacity="0.1" fill="none"/></pattern></defs><rect width="100" height="100" fill="url(%23tools)"/></svg>') repeat;
+            opacity: 0.1;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(255, 107, 53, 0.15);
+            border-color: #FF6B35;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #f8f8f8;
+        }
+        
+        .price-tag {
+            font-family: 'JetBrains Mono', monospace;
+            color: #FF6B35;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        
+        .cart-icon {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .cart-icon.bounce {
+            animation: bounce 0.6s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 60%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            80% { transform: translateY(-5px); }
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #FF6B35;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #2C3E50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: #34495E;
+            transform: translateY(-1px);
+        }
+        
+        .category-filter {
+            background: white;
+            border: 2px solid #e0e0e0;
+            color: #666;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .category-filter:hover,
+        .category-filter.active {
+            border-color: #FF6B35;
+            background: #FF6B35;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast-success {
+            border-left: 4px solid #27AE60;
+        }
+        
+        .toast-error {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .toast-content {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .toast-message {
+            flex: 1;
+            margin-right: 12px;
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .search-container {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 48px 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #FF6B35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        .featured-products {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 32px 0;
+            border: 2px solid #FF6B35;
+        }
+        
+        .section-title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: #2C3E50;
+            text-align: center;
+            margin-bottom: 32px;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: #FF6B35;
+            border-radius: 2px;
+        }
+        
+        .stock-indicator {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .stock-high {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .stock-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .stock-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        #particles-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Badge para productos destacados */
+        .featured-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .product-card {
+            position: relative;
+        }
+
+        /* Mejoras para el carousel de destacados */
+        .featured-products {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 32px 0;
+            border: 2px solid #FF6B35;
+        }
+
+        /* Categorías mejoradas */
+        .category-filter {
+            background: white;
+            border: 2px solid #e0e0e0;
+            color: #666;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-filter:hover,
+        .category-filter.active {
+            border-color: #FF6B35;
+            background: #FF6B35;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            
+            .hero-section {
+                padding: 32px 16px;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .featured-products {
+                padding: 16px;
+                margin: 24px 0;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <img src="resources/logo.jpg" alt="San Juan Construye" class="h-10 w-auto">
+                    <span class="ml-3 text-xl font-bold text-gray-dark font-inter">San Juan Construye</span>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-orange-primary font-medium">Inicio</a>
+                    <a href="cart.html" class="text-gray-700 hover:text-orange-primary font-medium transition-colors">Carrito</a>
+                    <a href="checkout.html" class="text-gray-700 hover:text-orange-primary font-medium transition-colors">Pedidos</a>
+                </nav>
+                
+                <!-- Cart Icon -->
+                <div class="flex items-center">
+                    <a href="cart.html" class="cart-icon relative">
+                        <svg class="w-6 h-6 text-gray-700 hover:text-orange-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9m-9 0V19a2 2 0 002 2h7a2 2 0 002-2v-4"></path>
+                        </svg>
+                        <span id="cart-count" class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-white py-20 relative">
+        <div id="particles-canvas"></div>
+        <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold font-inter mb-6">
+                Todo en <span class="text-orange-primary">Herramientas</span> y Materiales
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                La San Juan Construye más completa con los mejores precios y calidad garantizada
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button class="btn-primary text-lg px-8 py-4" onclick="document.getElementById('products').scrollIntoView({behavior: 'smooth'})">
+                    Ver Productos
+                </button>
+                <a href="cart.html" class="btn-secondary text-lg px-8 py-4 inline-block">
+                    Mi Carrito
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search and Filters -->
+    <section class="py-8 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            class="search-input" 
+                            placeholder="Buscar productos..."
+                        >
+                        <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- Category Filters -->
+                <div class="flex flex-wrap gap-3 justify-center">
+                    <!-- Los filtros se generarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="featured-products max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="section-title">Productos Destacados</h2>
+        
+        <div class="splide" id="featured-carousel">
+            <div class="splide__track">
+                <ul class="splide__list">
+                    <!-- Los productos destacados se generarán dinámicamente -->
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section id="products" class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="section-title">Todos los Productos</h2>
+            
+            <div class="product-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Products will be dynamically generated -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-dark text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 font-inter">San Juan Construye</h3>
+                    <p class="text-gray-300">Tu proveedor confiable de herramientas y materiales de construcción con más de 20 años de experiencia.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contacto</h4>
+                    <p class="text-gray-300">📱 Tel: 2645776592</p>
+                    <p class="text-gray-300">📧 info@ferreteria.com</p>
+                    <p class="text-gray-300">🕒 Lun-Sab: 8:00-21:00</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Servicios</h4>
+                    <p class="text-gray-300">✓ Envío a domicilio</p>
+                    <p class="text-gray-300">✓ Asesoría técnica</p>
+                    <p class="text-gray-300">✓ Garantía en productos</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-600 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 San Juan Construye. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="main.js"></script>
+    
+    <script>
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Esperar a que la aplicación se inicialice
+            setTimeout(() => {
+                initializeCarousel();
+                bindSearchEvents();
+            }, 1000);
+        });
+
+        function initializeCarousel() {
+            // Solo inicializar si hay productos destacados
+            const featuredProducts = window.ferreteriaApp?.getFeaturedProducts();
+            
+            if (featuredProducts && featuredProducts.length > 0 && typeof Splide !== 'undefined') {
+                try {
+                    new Splide('#featured-carousel', {
+                        type: 'loop',
+                        perPage: Math.min(3, featuredProducts.length),
+                        perMove: 1,
+                        gap: '2rem',
+                        autoplay: true,
+                        interval: 3000,
+                        breakpoints: {
+                            768: {
+                                perPage: 1,
+                            },
+                            1024: {
+                                perPage: 2,
+                            }
+                        }
+                    }).mount();
+                } catch (error) {
+                    console.error('Error inicializando carousel:', error);
+                }
+            }
+        }
+
+        function bindSearchEvents() {
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase().trim();
+                    filterProducts(searchTerm);
+                });
+            }
+        }
+
+        function filterProducts(searchTerm) {
+            const productCards = document.querySelectorAll('.product-card');
+            let visibleCount = 0;
+
+            productCards.forEach(card => {
+                const productName = card.querySelector('.product-name')?.textContent.toLowerCase() || '';
+                const productDescription = card.querySelector('.product-description')?.textContent.toLowerCase() || '';
+                const productCode = card.querySelector('.text-xs.text-gray-500')?.textContent.toLowerCase() || '';
+
+                const matchesSearch = searchTerm === '' || 
+                    productName.includes(searchTerm) || 
+                    productDescription.includes(searchTerm) ||
+                    productCode.includes(searchTerm);
+
+                if (matchesSearch) {
+                    card.style.display = 'block';
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                    card.classList.add('hidden');
+                }
+            });
+
+            // Mostrar mensaje si no hay resultados
+            showNoResultsMessage(visibleCount === 0 && searchTerm !== '');
+        }
+
+        function showNoResultsMessage(show) {
+            // Remover mensaje anterior si existe
+            const existingMessage = document.getElementById('no-results-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            if (show) {
+                const productsGrid = document.querySelector('.product-grid');
+                const message = document.createElement('div');
+                message.id = 'no-results-message';
+                message.className = 'col-span-full text-center py-12';
+                message.innerHTML = `
+                    <div class="text-gray-500">
+                        <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold mb-2">No se encontraron productos</h3>
+                        <p>Intenta con otros términos de búsqueda</p>
+                    </div>
+                `;
+                productsGrid.appendChild(message);
+            }
+        }
+
+        // Función global para recargar productos
+        function refreshProducts() {
+            if (window.ferreteriaApp) {
+                window.ferreteriaApp.refreshProducts().then(() => {
+                    initializeCarousel();
+                });
+            }
+        }
+
+        // Función toast para esta página
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <span class="toast-message">${message}</span>
+                    <button class="toast-close">&times;</button>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            // Cerrar toast al hacer click en el botón
+            toast.querySelector('.toast-close').addEventListener('click', function() {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            });
+            
+            // Auto-remover después de 5 segundos
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (document.body.contains(toast)) {
+                            document.body.removeChild(toast);
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
+
+        // Botón de recarga para testing
+        function addRefreshButton() {
+            const header = document.querySelector('header .max-w-7xl');
+            if (header) {
+                const refreshBtn = document.createElement('button');
+                refreshBtn.className = 'btn-secondary text-sm ml-4';
+                refreshBtn.innerHTML = '🔄 Recargar';
+                refreshBtn.onclick = refreshProducts;
+                header.querySelector('.flex.items-center').appendChild(refreshBtn);
+            }
+        }
+
+        // Agregar botón de recarga (útil para desarrollo)
+        setTimeout(addRefreshButton, 2000);
+    </script>
+</body>
+</html>
+
+
