@@ -38,7 +38,7 @@ class FerreteriaApp {
         try {
             console.log('🔄 Cargando productos desde Google Sheet...');
             
-            const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw5JtLIQU5j-fj8fNO3iNfOQ3RO3pqmZMP2qFZ1RwpWl_4ZcyLIsNYQf_AgWEGx3I38/exec';
+            const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyvOEchC2dkVDMYN6pAP2jL1eUUk8cudNUjbWG62IlSVtCAj8FuBDfgK5rgX3O9oP_ivQ/exec';
             
             const response = await fetch(WEBAPP_URL);
             
@@ -616,4 +616,5 @@ function refreshProducts() {
         window.ferreteriaApp.refreshProducts();
     }
 }
+
 
