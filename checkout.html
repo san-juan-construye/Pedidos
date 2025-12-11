@@ -1036,20 +1036,20 @@
 
         // 🔥 FUNCIÓN PARA GOOGLE FORM - CONFIGURACIÓN COMPLETA
         function submitToGoogleForm(orderData) {
-            const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfuRG4ntMCrNvMTvoNFFog22Pb9pxd7X4wsrrgqk80cIcyQ7Q/formResponse';
+            const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeOiBCSep3um_imHzkLVf1DNPGTM8r_5_QDXA-273ZQQE2ifA/formResponse';
             
             // 🎯 MAPPING EXACTO DE TUS CAMPOS
             const formData = {
-                'entry.1536770897': orderData.orderId,                    // ID de Pedido
-                'entry.1658915950': orderData.createdAt,                  // Fecha y Hora
-                'entry.1435753368': orderData.customer.name,              // Nombre del Cliente
-                'entry.241949824': orderData.customer.phone,              // Teléfono
-                'entry.865494145': orderData.customer.email || '',        // Email
-                'entry.1244595916': formatAddress(orderData.customer.address), // Dirección Completa
-                'entry.997019643': getDeliveryTimeText(orderData.deliveryTime), // Horario de Entrega
-                'entry.252162519': formatProductsList(orderData.items),   // Lista de Productos
-                'entry.51763704': `$${orderData.total.toFixed(2)}`,       // Total del Pedido
-                'entry.574133546': JSON.stringify(orderData, null, 2)     // Datos Completos (JSON)
+                'entry.261257080': orderData.orderId,                    // ID de Pedido
+                'entry.1538713141': orderData.createdAt,                  // Fecha y Hora
+                'entry.1742452753': orderData.customer.name,              // Nombre del Cliente
+                'entry.531371537': orderData.customer.phone,              // Teléfono
+                'entry.950381102': orderData.customer.email || '',        // Email
+                'entry.161119183': formatAddress(orderData.customer.address), // Dirección Completa
+                'entry.1357912503': getDeliveryTimeText(orderData.deliveryTime), // Horario de Entrega
+                'entry.430531437': formatProductsList(orderData.items),   // Lista de Productos
+                'entry.2033696036': `$${orderData.total.toFixed(2)}`,       // Total del Pedido
+                'entry.2045249986': JSON.stringify(orderData, null, 2)     // Datos Completos (JSON)
             };
 
             console.log('📤 Enviando a Google Form:', formData);
@@ -1289,5 +1289,6 @@
     </script>
 </body>
 </html>
+
 
 
